@@ -11,5 +11,6 @@ prometheus:
 grafana:
   name: grafana
   image: grafana/grafana
+  replicas: 1
   prometheusUrl: http://prometheus-0.prometheus:9090
   host: monitoring.drasken.cloud
