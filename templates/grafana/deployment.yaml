@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.grafana.name}}
+  namespace: {{.Values.namespace.name}}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {{.Values.grafana.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.grafana.name}}
+    spec:
+      containers:
+        - name: {{.Values.grafana.name}}
+          image: {{.Values.grafana.image}}
+          env:
+            - name: GF_INSTALL_PLUGINS
+              value: "grafana-piechart-panel"
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: config
+              mountPath: /etc/grafana/provisioning/datasources/prometheus.yml
+              subPath: prometheus.yml
+            - name: {{.Values.grafana.name}}-data
+              mountPath: /var/lib/grafana
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+      volumes:
+        - name: config
+          configMap:
+            name: {{.Values.grafana.name}}-config
+        - name: {{.Values.grafana.name}}-data
+          persistentVolumeClaim:
+            claimName: {{.Values.grafana.name}}-data

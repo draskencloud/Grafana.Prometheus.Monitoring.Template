@@ -1,0 +1,15 @@
+namespace:
+  name: monitoring
+  labels:
+    drasken.io/env: dev
+    drasken.io/owner: platform
+
+prometheus:
+  name: prometheus
+  image: prom/prometheus
+
+grafana:
+  name: grafana
+  image: grafana/grafana
+  prometheusUrl: http://prometheus-0.prometheus:9090
+  host: monitoring.drasken.cloud

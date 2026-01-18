@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{.Values.prometheus.name}}
+  namespace: {{.Values.namespace.name}}
+spec:
+  serviceName: {{.Values.prometheus.name}}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{.Values.prometheus.name}}
+
+  template:
+    metadata:
+      labels:
+        app: {{.Values.prometheus.name}}
+    spec:
+      containers:
+        - name: prometheus
+          image: {{.Values.prometheus.image}}
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--storage.tsdb.retention.time=15d"
+            - "--web.enable-lifecycle"
+          ports:
+            - containerPort: 9090
+              name: web
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: data
+              mountPath: /prometheus
+
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 50Gi
