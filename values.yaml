@@ -14,3 +14,13 @@ grafana:
   replicas: 1
   prometheusUrl: http://prometheus-0.prometheus:9090
   host: monitoring.drasken.cloud
+
+mysql:
+  name: mysql
+  image: mysql
+  replicas: 1
+  rootPassword: Root@123
+  database: grafana
+  user: grafana
+  password: Grafana@123
+  storageSize: 20Gi

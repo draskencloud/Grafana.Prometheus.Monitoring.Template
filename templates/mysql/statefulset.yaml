@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{.Values.mysql.name}}
+  namespace: {{.Values.namespace.name}}
+spec:
+  serviceName: {{.Values.mysql.name}}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{.Values.mysql.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.mysql.name}}
+    spec:
+      containers:
+        - name: {{.Values.mysql.name}}
+          image: {{.Values.mysql.image}}
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - secretRef:
+                name: {{.Values.mysql.name}}-secret
+          volumeMounts:
+            - name: {{.Values.mysql.name}}-data
+              mountPath: /var/lib/mysql
+            - name: {{.Values.mysql.name}}-config
+              mountPath: /etc/mysql/conf.d
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+      volumes:
+        - name: {{.Values.mysql.name}}-config
+          configMap:
+            name: {{.Values.mysql.name}}-config
+  volumeClaimTemplates:
+    - metadata:
+        name: {{.Values.mysql.name}}-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{.Values.mysql.storageSize}}

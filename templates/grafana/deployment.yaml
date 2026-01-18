@@ -16,6 +16,9 @@ spec:
       containers:
         - name: {{.Values.grafana.name}}
           image: {{.Values.grafana.image}}
+          envFrom:
+            - secretRef:
+                name: {{.Values.grafana.name}}-mysql-secret
           env:
             - name: GF_INSTALL_PLUGINS
               value: "grafana-piechart-panel"
