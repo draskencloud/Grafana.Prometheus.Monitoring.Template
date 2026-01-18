@@ -6,9 +6,4 @@ metadata:
 data:
   prometheus.yml: |
     scrape_configs:
-      - job_name: prometheus
-        metrics_path: /metrics
-        scrape_interval: 15s
-        scrape_timeout: 15s
-        static_configs:
-          - targets: ["localhost:9090"]
+{{ toYaml .Values.prometheus.scrape_configs | nindent 6 }}

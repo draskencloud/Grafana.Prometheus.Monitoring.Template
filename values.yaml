@@ -7,6 +7,22 @@ namespace:
 prometheus:
   name: prometheus
   image: prom/prometheus
+  scrape_configs:
+    - job_name: prometheus
+      metrics_path: /metrics
+      scrape_interval: 15s
+      scrape_timeout: 15s
+      static_configs:
+        - targets:
+            - localhost:9090
+
+    - job_name: main-node
+      metrics_path: /metrics
+      scrape_interval: 15s
+      scrape_timeout: 15s
+      static_configs:
+        - targets:
+            - 51.83.6.157:9100
 
 grafana:
   name: grafana
